@@ -25,18 +25,33 @@ var item20 = ['wine-glass', 'jpg', 'Non-Orthogonal Wine Glass'];
 // Create an array with these 20 items
 var productsList = [];
 for (var i = 0; i < 20; i++) {
-  console.log('Loop ' + i);
+  // console.log('Loop ' + i);
   var target = eval('item' + (i + 1));
-  console.log(target);
+  // console.log(target);
   var result = new Product(target[0], target[1], target[2]);
-  console.log(result);
+  // console.log(result);
   productsList.push(result);
-  console.log(productsList);
+  // console.log(productsList);
+}
+
+var selectedProduct;
+
+// Select 3 random products, without duplication
+for (var i = 0; i < 3; i++) {
+  var newChoice = false;
+  while (!newChoice) {
+    randomChoice();
+    if (checkIfNew()) {
+      console.log('Now displaying ' + selectedProduct.name);
+      selectedProduct.onDisplay = true;
+      newChoice = true;
+    }
+  }
 }
 
 // Display a product to the page
-document.write('<p>' + productsList[3].name + '</p>');
-document.write('<img src = "' + productsList[3].imagePath + '" />');
+// document.write('<p>' + productsList[3].name + '</p>');
+// document.write('<img src = "' + productsList[3].imagePath + '" />');
 
 // Object constructor function for new products
 function Product(shortName, imageType, longName) {
@@ -55,4 +70,27 @@ function Product(shortName, imageType, longName) {
       var result = NaN;
     }
   };
+}
+
+// Select a random product
+function randomChoice() {
+  var result = Math.floor((Math.random() * productsList.length) + 1);
+  console.log('Random number chosen:' + result);
+  selectedProduct = productsList[result];
+  console.log('Selected ' + selectedProduct.name);
+}
+
+// Check if product is currently displayed or was displayed previously
+function checkIfNew() {
+  if (selectedProduct.lastDisplayed) {
+    console.log('This product was previously displayed.');
+    return false;
+  } else if (selectedProduct.onDisplay) {
+    console.log('This product is already on display.');
+    return false;
+  } else {
+    console.log('Product has not been displayed yet.');
+    // Mark product as currently on display
+    return true;
+  }
 }
