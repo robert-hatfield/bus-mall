@@ -34,7 +34,8 @@ for (var i = 0; i < 20; i++) {
   console.log(productsList);
 }
 
-// Display an image to the page
+// Display a product to the page
+document.write('<p>' + productsList[3].name + '</p>');
 document.write('<img src = "' + productsList[3].imagePath + '" />');
 
 // Object constructor function for new products
