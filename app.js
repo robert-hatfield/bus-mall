@@ -28,32 +28,15 @@ var selectedProduct;
 var currentDisplay = [];
 var lastDisplaySet = [];
 var round = 0;
+var chooser = document.getElementById('choices');
 
-for (var i = 0; i < 20; i++) {
-  // console.log('Loop ' + i);
-  var target = eval('item' + (i + 1));
-  // console.log(target);
-  var result = new Product(target[0], target[1], target[2]);
-  // console.log(result);
-  productsList.push(result);
-  // console.log(productsList);
-}
+createProductList ();
+// voting(25);
 
-// Offer 25 sets of products
-for (round; round < 25; round++) {
-  console.log('Offering set ' + (round + 1) + ' of 25.');
-  chooseThree();
-  console.log('Set ' + (round + 1) + ' is ' + currentDisplay);
-  document.write('<p>Set ' + (round + 1) + ': ' + currentDisplay[0].elementId + ' (' + currentDisplay[0].displayCount + '), ');
-  document.write(currentDisplay[1].elementId + ' (' + currentDisplay[1].displayCount + '), ');
-  document.write(currentDisplay[2].elementId + ' (' + currentDisplay[2].displayCount + ')</p>');
-  // After displaying current 3 products, mark them as previously displayed and no longer currently on display.
-  for (var j = 0; j < 3; j++) {
-    currentDisplay[j].lastDisplayed = true;
-    currentDisplay[j].onDisplay = false;
-  }
-  // user makes selection
-}
+// Display a product to the page
+// document.write('<p>' + productsList[3].name + '</p>');
+var testing = Math.floor((Math.random() * productsList.length));
+productsList[testing].renderProduct();
 
 // Select 3 random products, without duplication
 function chooseThree() {
@@ -88,10 +71,6 @@ function chooseThree() {
   }
 }
 
-// Display a product to the page
-// document.write('<p>' + productsList[3].name + '</p>');
-// document.write('<img src = "' + productsList[3].imagePath + '" />');
-
 // Object constructor function for new products
 function Product(shortName, imageType, longName) {
   this.displayCount = 0;
@@ -108,6 +87,20 @@ function Product(shortName, imageType, longName) {
     } else {
       var result = NaN;
     }
+  };
+
+  this.renderProduct = function() {
+    var productEl = document.createElement('section');
+    productEl.setAttribute('id', this.elementId);
+    chooser.appendChild(productEl);
+    var descriptionEl = document.createElement('p');
+    descriptionEl.setAttribute('class', 'description');
+    descriptionEl.textContent = this.name;
+    productEl.appendChild(descriptionEl);
+    var imageEl = document.createElement('img');
+    imageEl.setAttribute('class', 'product-image');
+    imageEl.setAttribute('src', this.imagePath);
+    productEl.appendChild(imageEl);
   };
 }
 
@@ -132,5 +125,35 @@ function checkIfNew() {
     console.log('Product has not been displayed yet.');
     // Mark product as currently on display
     return true;
+  }
+}
+
+function createProductList () {
+  for (var i = 0; i < 20; i++) {
+    // console.log('Loop ' + i);
+    var target = eval('item' + (i + 1));
+    // console.log(target);
+    var result = new Product(target[0], target[1], target[2]);
+    // console.log(result);
+    productsList.push(result);
+    // console.log(productsList);
+  }
+}
+
+// Offer 25 sets of products
+function voting(maxRounds) {
+  for (round; round < maxRounds; round++) {
+    console.log('Offering set ' + (round + 1) + ' of 25.');
+    chooseThree();
+    console.log('Set ' + (round + 1) + ' is ' + currentDisplay);
+    document.write('<p>Set ' + (round + 1) + ': ' + currentDisplay[0].elementId + ' (' + currentDisplay[0].displayCount + '), ');
+    document.write(currentDisplay[1].elementId + ' (' + currentDisplay[1].displayCount + '), ');
+    document.write(currentDisplay[2].elementId + ' (' + currentDisplay[2].displayCount + ')</p>');
+    // After displaying current 3 products, mark them as previously displayed and no longer currently on display.
+    for (var j = 0; j < 3; j++) {
+      currentDisplay[j].lastDisplayed = true;
+      currentDisplay[j].onDisplay = false;
+    }
+    // user makes selection
   }
 }
