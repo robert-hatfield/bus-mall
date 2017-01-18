@@ -28,8 +28,11 @@ var randomProduct;
 var currentDisplaySet = [];
 var lastDisplaySet = [];
 var currentRound = 0;
-var maxRounds = 5;
-var chooser = document.getElementById('choices');
+var maxRounds = 25;
+var choicesSection = document.getElementById('choices');
+var resultsSection = document.getElementById('participant-results');
+var currentListeners = [];
+var listener;
 
 // Create objects for all pre-defined products and add them to an array
 createProductList();
@@ -39,9 +42,9 @@ chooseThree();
 
 function createProductList () {
   for (var i = 0; i < 20; i++) {
-    var target = eval('item' + (i + 1));  // Set variable name for array to be constructed into a product object
-    // console.log('Constructing: ' + target);
-    var result = new Product(target[0], target[1], target[2]); // Pass short name, image extension and long name to constructor
+    var itemNumber = eval('item' + (i + 1));  // Set variable name for array to be constructed into a product object
+    // console.log('Constructing: ' + itemNumber);
+    var result = new Product(itemNumber[0], itemNumber[1], itemNumber[2]); // Pass short name, image extension and long name to constructor
     // console.log(result);
     allProducts.push(result);
     // console.log(allProducts);
@@ -82,9 +85,9 @@ function Product(shortName, imageType, longName) {
 
   this.selectionPct = function() {
     if (this.displayCount !== 0) {
-      var result = (this.selectionCount / this.displayCount).toFixed(2);
+      return (this.selectionCount / this.displayCount).toFixed(2) + '%';
     } else {
-      var result = NaN;
+      return '0.00% (this product was not displayed)';
     }
   };
 }
@@ -120,15 +123,20 @@ function selectionMade(event) {
     }
   }
   this.selectionCount += 1; console.log('user chose ' + event.currentTarget.id);
-  // remove product list from page
-  while (chooser.firstChild) {
-    console.log('Removing ' + chooser.firstChild.id);
-    chooser.removeChild(chooser.firstChild);
-  }
   if (currentRound < maxRounds) {
+    // remove product list & associated listeners
+    currentListeners = [];
+    while (choicesSection.firstChild) {
+      console.log('Removing ' + choicesSection.firstChild.id);
+      choicesSection.removeChild(choicesSection.firstChild);
+    }
     chooseThree();
   } else {
     console.log('All done!');
+    for (var i = 0; i < 3; i++) {
+      currentListeners[i].removeEventListener('click', selectionMade);
+    }
+    renderResults();
   }
 }
 
@@ -136,7 +144,7 @@ function renderProduct(product) {
   var productEl = document.createElement('section');
   productEl.setAttribute('id', product.elementId);
   productEl.setAttribute('class', 'product-section');
-  chooser.appendChild(productEl);
+  choicesSection.appendChild(productEl);
   var descriptionEl = document.createElement('p');
   descriptionEl.setAttribute('class', 'description');
   descriptionEl.textContent = product.name;
@@ -145,5 +153,20 @@ function renderProduct(product) {
   imageEl.setAttribute('class', 'product-image');
   imageEl.setAttribute('src', product.imagePath);
   productEl.appendChild(imageEl);
-  productEl.addEventListener('click', selectionMade, false);
+  listener = productEl.addEventListener('click', selectionMade, false);
+  currentListeners.push(productEl);
+}
+
+function renderResults() {
+  console.log();
+  var listEl = document.createElement('ol');
+  listEl.setAttribute('id', 'results-list');
+  resultsSection.appendChild(listEl);
+  for (var i = 0; i < allProducts.length; i++) {
+    var itemEl = document.createElement('li');
+    itemEl.setAttribute('id', allProducts[i].elementId + '-results');
+    itemEl.textContent = allProducts[i].selectionCount + ' vote(s) for the ' + allProducts[i].name + ' (displayed ' + allProducts[i].displayCount + ' time(s))';
+    // itemEl.textContent = allProducts[i].name + ':\nDisplayed ' + allProducts[i].displayCount + ' times, Chosen ' + allProducts[i].selectionCount + ' times.\n(' + allProducts[i].selectionPct() + ')';
+    listEl.appendChild(itemEl);
+  }
 }
