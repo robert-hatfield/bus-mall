@@ -102,6 +102,7 @@ function Product(shortName, imageType, longName) {
     imageEl.setAttribute('class', 'product-image');
     imageEl.setAttribute('src', this.imagePath);
     productEl.appendChild(imageEl);
+    productEl.addEventListener('click', selectionMade, false);
   };
 }
 
@@ -141,20 +142,39 @@ function createProductList () {
   }
 }
 
-// Offer 25 sets of products
+// Offer a set of 3 products
 function voting(maxRounds) {
+  var voteEntered = false;
+  var chosenProduct;
   for (round; round < maxRounds; round++) {
     console.log('Offering set ' + (round + 1) + ' of 25.');
     chooseThree();
     console.log('Set ' + (round + 1) + ' is ' + currentDisplay[0].elementId + ', ' + currentDisplay[1].elementId + ' and ' + currentDisplay[2].elementId);
     for (var i = 0; i < currentDisplay.length; i++) {
       currentDisplay[i].renderProduct();
-    }
-    // After displaying current 3 products, mark them as previously displayed and no longer currently on display.
-    for (var j = 0; j < 3; j++) {
-      currentDisplay[j].lastDisplayed = true;
-      currentDisplay[j].onDisplay = false;
-    }
-    // user makes selection
+      currentDisplay[i].onclick = function () {
+        this.selectionCount += 1;
+        chosenProduct = this.elementId;
+        voteEntered = true;
+      };
+      // Mark product as previously displayed and no longer currently on display.
+      currentDisplay[i].lastDisplayed = true;
+      currentDisplay[i].onDisplay = false;
+    };
   }
+    // while (!voteEntered) {
+    //   // Wait until user selects a product before offering another voting round
+    // }
+  // console.log('User chose ' + chosenProduct);
+}
+
+function selectionMade(event) {
+  console.log('Target is ' + event.target.elementId);
+  for (var i = 0; i < currentDisplay.length; i++) {
+    if (event.target.elementId === currentDisplay[i].elementId) {
+      currentDisplay[i].selectionCount += 1;
+      console.log(currentDisplay[i].selectionCount);
+    }
+  }
+  this.selectionCount += 1; console.log('user chose ' + event.target.elementId);
 }
