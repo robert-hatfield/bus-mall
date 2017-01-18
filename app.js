@@ -22,27 +22,25 @@ var item18 = ['usb', 'gif', 'USB Wriggling Tentacle'];
 var item19 = ['water-can', 'jpg', 'Recursive Watering Can'];
 var item20 = ['wine-glass', 'jpg', 'Non-Orthogonal Wine Glass'];
 
-// Declare variables & create an array with these 20 items
-var productsList = [];
-var selectedProduct;
-var currentDisplay = [];
+// Declare variables
+var allProducts = [];
+var randomProduct;
+var currentDisplaySet = [];
 var lastDisplaySet = [];
-var round = 0;
+var selectionRound = 0;
 var chooser = document.getElementById('choices');
 
+// Create objects for all pre-defined products and add them to an array
 createProductList ();
+
+// Select three products, without duplication
+chooseThree();
 voting(1);
 
-// Display a product to the page
-// document.write('<p>' + productsList[3].name + '</p>');
-// var testing = Math.floor((Math.random() * productsList.length));
-// productsList[testing].renderProduct();
-
-// Select 3 random products, without duplication
 function chooseThree() {
-  // Clear current list of displayed items
-  lastDisplaySet = currentDisplay;
-  currentDisplay = [];
+  // Save last set of displayed items before clearing the current list
+  lastDisplaySet = currentDisplaySet;
+  currentDisplaySet = [];
   for (var i = 0; i < 3; i++) {
     console.log('Choosing item ' + (i + 1) + ' of this set.');
     var newChoice = false;
@@ -50,19 +48,19 @@ function chooseThree() {
     while (!newChoice) {
       randomChoice();
       if (checkIfNew()) {
-        console.log('Now displaying ' + selectedProduct.name);
+        console.log('Now displaying ' + randomProduct.name);
         // Set display flags for current and past
-        selectedProduct.onDisplay = true;
-        selectedProduct.displayCount ++;
+        randomProduct.onDisplay = true;
+        randomProduct.displayCount ++;
         // Add selection to list of currently displayed items
-        currentDisplay.push(selectedProduct);
+        currentDisplaySet.push(randomProduct);
         // End this loop
         newChoice = true;
       }
     }
   }
-  console.log(currentDisplay[0].elementId + ', ' + currentDisplay[1].elementId + ' and ' + currentDisplay[2].elementId);
-  if (round === 0) {
+  console.log(currentDisplaySet[0].elementId + ', ' + currentDisplaySet[1].elementId + ' and ' + currentDisplaySet[2].elementId);
+  if (selectionRound === 0) {
     return;
   }
   // Clear display flag from previous set
@@ -93,18 +91,18 @@ function Product(shortName, imageType, longName) {
 // Select a random product
 function randomChoice() {
   // Do not add 1 to result; array is zero-indexed.
-  var randomNumber = Math.floor((Math.random() * productsList.length));
+  var randomNumber = Math.floor((Math.random() * allProducts.length));
   console.log('Random number chosen:' + randomNumber);
-  selectedProduct = productsList[randomNumber];
-  console.log('Selected ' + selectedProduct.name);
+  randomProduct = allProducts[randomNumber];
+  console.log('Selected ' + randomProduct.name);
 }
 
 // Check if product is currently displayed or was displayed previously
 function checkIfNew() {
-  if (selectedProduct.lastDisplayed) {
+  if (randomProduct.lastDisplayed) {
     console.log('This product was previously displayed.');
     return false;
-  } else if (selectedProduct.onDisplay) {
+  } else if (randomProduct.onDisplay) {
     console.log('This product is already on display.');
     return false;
   } else {
@@ -121,8 +119,8 @@ function createProductList () {
     // console.log(target);
     var result = new Product(target[0], target[1], target[2]);
     // console.log(result);
-    productsList.push(result);
-    // console.log(productsList);
+    allProducts.push(result);
+    // console.log(allProducts);
   }
 }
 
@@ -130,21 +128,21 @@ function createProductList () {
 function voting(maxRounds) {
   var voteEntered = false;
   var chosenProduct;
-  for (round; round < maxRounds; round++) {
-    console.log('Offering set ' + (round + 1) + ' of 25.');
+  for (selectionRound; selectionRound < maxRounds; selectionRound++) {
+    console.log('Offering set ' + (selectionRound + 1) + ' of 25.');
     chooseThree();
-    console.log('Set ' + (round + 1) + ' is ' + currentDisplay[0].elementId + ', ' + currentDisplay[1].elementId + ' and ' + currentDisplay[2].elementId);
-    for (var i = 0; i < currentDisplay.length; i++) {
-      renderProduct(currentDisplay[i]);
-      // currentDisplay[i].onclick = function () {
+    console.log('Set ' + (selectionRound + 1) + ' is ' + currentDisplaySet[0].elementId + ', ' + currentDisplaySet[1].elementId + ' and ' + currentDisplaySet[2].elementId);
+    for (var i = 0; i < currentDisplaySet.length; i++) {
+      renderProduct(currentDisplaySet[i]);
+      // currentDisplaySet[i].onclick = function () {
       //   this.selectionCount += 1;
       //   chosenProduct = this.elementId;
       //   voteEntered = true;
       //   console.log(voteEntered);
       // };
       // Mark product as previously displayed and no longer currently on display.
-      currentDisplay[i].lastDisplayed = true;
-      currentDisplay[i].onDisplay = false;
+      currentDisplaySet[i].lastDisplayed = true;
+      currentDisplaySet[i].onDisplay = false;
     };
   }
     // while (!voteEntered) {
@@ -157,10 +155,10 @@ function selectionMade(event) {
   console.log('Target is ' + event.currentTarget);
   console.log(event.currentTarget);
   console.log(event.currentTarget.id);
-  for (var i = 0; i < currentDisplay.length; i++) {
-    if (event.currentTarget.id === currentDisplay[i].elementId) {
-      currentDisplay[i].selectionCount += 1;
-      console.log(currentDisplay[i].selectionCount);
+  for (var i = 0; i < currentDisplaySet.length; i++) {
+    if (event.currentTarget.id === currentDisplaySet[i].elementId) {
+      currentDisplaySet[i].selectionCount += 1;
+      console.log(currentDisplaySet[i].selectionCount);
     }
   }
   this.selectionCount += 1; console.log('user chose ' + event.currentTarget.id);
