@@ -27,46 +27,49 @@ var allProducts = [];
 var randomProduct;
 var currentDisplaySet = [];
 var lastDisplaySet = [];
-var selectionRound = 0;
+var currentRound = 0;
+var maxRounds = 5;
 var chooser = document.getElementById('choices');
 
 // Create objects for all pre-defined products and add them to an array
-createProductList ();
+createProductList();
 
 // Select three products, without duplication
 chooseThree();
-voting(1);
+
+function createProductList () {
+  for (var i = 0; i < 20; i++) {
+    var target = eval('item' + (i + 1));  // Set variable name for array to be constructed into a product object
+    // console.log('Constructing: ' + target);
+    var result = new Product(target[0], target[1], target[2]); // Pass short name, image extension and long name to constructor
+    // console.log(result);
+    allProducts.push(result);
+    // console.log(allProducts);
+  }
+}
 
 function chooseThree() {
   // Save last set of displayed items before clearing the current list
   lastDisplaySet = currentDisplaySet;
   currentDisplaySet = [];
-  for (var i = 0; i < 3; i++) {
-    console.log('Choosing item ' + (i + 1) + ' of this set.');
-    var newChoice = false;
+  // Repeat until 3 unique products are selected for rendering
+  while (currentDisplaySet.length < 3) {
+    console.log('Choosing item ' + (currentDisplaySet.length + 1) + ' of set ' + (currentRound + 1));
     // Keep picking a random product until a new one is selected
-    while (!newChoice) {
+    do {
       randomChoice();
-      if (checkIfNew()) {
-        console.log('Now displaying ' + randomProduct.name);
-        // Set display flags for current and past
-        randomProduct.onDisplay = true;
-        randomProduct.displayCount ++;
-        // Add selection to list of currently displayed items
-        currentDisplaySet.push(randomProduct);
-        // End this loop
-        newChoice = true;
-      }
-    }
-  }
-  console.log(currentDisplaySet[0].elementId + ', ' + currentDisplaySet[1].elementId + ' and ' + currentDisplaySet[2].elementId);
-  if (selectionRound === 0) {
-    return;
-  }
-  // Clear display flag from previous set
-  for (var i = 0; i < 3; i++) {
-    lastDisplaySet[i].lastDisplayed = false;
-  }
+      checkIfNew(); // Only needed for debugging
+    } while (lastDisplaySet.includes(randomProduct) || currentDisplaySet.includes(randomProduct));
+    console.log(randomProduct.elementId + ' will be displayed.');
+    // Add new product to currentDisplaySet
+    currentDisplaySet.push(randomProduct);
+    // Increment display counter for product
+    randomProduct.displayCount ++;
+  };
+  console.log('Set ' + (currentRound + 1) + ' is: ' + currentDisplaySet[0].elementId + ', ' + currentDisplaySet[1].elementId + ' and ' + currentDisplaySet[2].elementId);
+  // Render the selected products with attached event listeners
+  currentDisplaySet.forEach(renderProduct);
+  currentRound ++;
 }
 
 // Object constructor function for new products
@@ -74,9 +77,7 @@ function Product(shortName, imageType, longName) {
   this.displayCount = 0;
   this.elementId = shortName;
   this.imagePath = 'img/' + shortName + '.' + imageType;
-  this.lastDisplayed = false;
   this.name = longName;
-  this.onDisplay = false;
   this.selectionCount = 0;
 
   this.selectionPct = function() {
@@ -94,61 +95,18 @@ function randomChoice() {
   var randomNumber = Math.floor((Math.random() * allProducts.length));
   console.log('Random number chosen:' + randomNumber);
   randomProduct = allProducts[randomNumber];
-  console.log('Selected ' + randomProduct.name);
+  console.log('Selected ' + randomProduct.elementId);
 }
 
 // Check if product is currently displayed or was displayed previously
 function checkIfNew() {
-  if (randomProduct.lastDisplayed) {
-    console.log('This product was previously displayed.');
-    return false;
-  } else if (randomProduct.onDisplay) {
-    console.log('This product is already on display.');
-    return false;
+  if (lastDisplaySet.includes(randomProduct)) {
+    console.log(randomProduct.elementId + ' was displayed in the previous set.');
+  } else if (currentDisplaySet.includes(randomProduct)) {
+    console.log(randomProduct.elementId + ' is already in the current set.');
   } else {
-    console.log('Product has not been displayed yet.');
-    // Mark product as currently on display
-    return true;
+    console.log(randomProduct.elementId + ' has not been displayed yet.');
   }
-}
-
-function createProductList () {
-  for (var i = 0; i < 20; i++) {
-    // console.log('Loop ' + i);
-    var target = eval('item' + (i + 1));
-    // console.log(target);
-    var result = new Product(target[0], target[1], target[2]);
-    // console.log(result);
-    allProducts.push(result);
-    // console.log(allProducts);
-  }
-}
-
-// Offer a set of 3 products
-function voting(maxRounds) {
-  var voteEntered = false;
-  var chosenProduct;
-  for (selectionRound; selectionRound < maxRounds; selectionRound++) {
-    console.log('Offering set ' + (selectionRound + 1) + ' of 25.');
-    chooseThree();
-    console.log('Set ' + (selectionRound + 1) + ' is ' + currentDisplaySet[0].elementId + ', ' + currentDisplaySet[1].elementId + ' and ' + currentDisplaySet[2].elementId);
-    for (var i = 0; i < currentDisplaySet.length; i++) {
-      renderProduct(currentDisplaySet[i]);
-      // currentDisplaySet[i].onclick = function () {
-      //   this.selectionCount += 1;
-      //   chosenProduct = this.elementId;
-      //   voteEntered = true;
-      //   console.log(voteEntered);
-      // };
-      // Mark product as previously displayed and no longer currently on display.
-      currentDisplaySet[i].lastDisplayed = true;
-      currentDisplaySet[i].onDisplay = false;
-    };
-  }
-    // while (!voteEntered) {
-    //   // Wait until user selects a product before offering another voting round
-    // }
-  // console.log('User chose ' + chosenProduct);
 }
 
 function selectionMade(event) {
@@ -166,6 +124,11 @@ function selectionMade(event) {
   while (chooser.firstChild) {
     console.log('Removing ' + chooser.firstChild.id);
     chooser.removeChild(chooser.firstChild);
+  }
+  if (currentRound < maxRounds) {
+    chooseThree();
+  } else {
+    console.log('All done!');
   }
 }
 
