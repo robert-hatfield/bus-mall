@@ -22,8 +22,13 @@ var item18 = ['usb', 'gif', 'USB Wriggling Tentacle'];
 var item19 = ['water-can', 'jpg', 'Recursive Watering Can'];
 var item20 = ['wine-glass', 'jpg', 'Non-Orthogonal Wine Glass'];
 
-// Create an array with these 20 items
+// Declare variables & create an array with these 20 items
 var productsList = [];
+var selectedProduct;
+var currentDisplay = [];
+var lastDisplaySet = [];
+var round = 0;
+
 for (var i = 0; i < 20; i++) {
   // console.log('Loop ' + i);
   var target = eval('item' + (i + 1));
@@ -34,18 +39,52 @@ for (var i = 0; i < 20; i++) {
   // console.log(productsList);
 }
 
-var selectedProduct;
+// Offer 25 sets of products
+for (round; round < 25; round++) {
+  console.log('Offering set ' + (round + 1) + ' of 25.');
+  chooseThree();
+  console.log('Set ' + (round + 1) + ' is ' + currentDisplay);
+  document.write('<p>Set ' + (round + 1) + ': ' + currentDisplay[0].elementId + ' (' + currentDisplay[0].displayCount + '), ');
+  document.write(currentDisplay[1].elementId + ' (' + currentDisplay[1].displayCount + '), ');
+  document.write(currentDisplay[2].elementId + ' (' + currentDisplay[2].displayCount + ')</p>');
+  // After displaying current 3 products, mark them as previously displayed and no longer currently on display.
+  for (var j = 0; j < 3; j++) {
+    currentDisplay[j].lastDisplayed = true;
+    currentDisplay[j].onDisplay = false;
+  }
+  // user makes selection
+}
 
 // Select 3 random products, without duplication
-for (var i = 0; i < 3; i++) {
-  var newChoice = false;
-  while (!newChoice) {
-    randomChoice();
-    if (checkIfNew()) {
-      console.log('Now displaying ' + selectedProduct.name);
-      selectedProduct.onDisplay = true;
-      newChoice = true;
+function chooseThree() {
+  // Clear current list of displayed items
+  lastDisplaySet = currentDisplay;
+  currentDisplay = [];
+  for (var i = 0; i < 3; i++) {
+    console.log('Choosing item ' + (i + 1) + ' of this set.');
+    var newChoice = false;
+    // Keep picking a random product until a new one is selected
+    while (!newChoice) {
+      randomChoice();
+      if (checkIfNew()) {
+        console.log('Now displaying ' + selectedProduct.name);
+        // Set display flags for current and past
+        selectedProduct.onDisplay = true;
+        selectedProduct.displayCount ++;
+        // Add selection to list of currently displayed items
+        currentDisplay.push(selectedProduct);
+        // End this loop
+        newChoice = true;
+      }
     }
+  }
+  console.log(currentDisplay[0].elementId + ', ' + currentDisplay[1].elementId + ' and ' + currentDisplay[2].elementId);
+  if (round === 0) {
+    return;
+  }
+  // Clear display flag from previous set
+  for (var i = 0; i < 3; i++) {
+    lastDisplaySet[i].lastDisplayed = false;
   }
 }
 
@@ -74,9 +113,10 @@ function Product(shortName, imageType, longName) {
 
 // Select a random product
 function randomChoice() {
-  var result = Math.floor((Math.random() * productsList.length) + 1);
-  console.log('Random number chosen:' + result);
-  selectedProduct = productsList[result];
+  // Do not add 1 to result; array is zero-indexed.
+  var randomNumber = Math.floor((Math.random() * productsList.length));
+  console.log('Random number chosen:' + randomNumber);
+  selectedProduct = productsList[randomNumber];
   console.log('Selected ' + selectedProduct.name);
 }
 
