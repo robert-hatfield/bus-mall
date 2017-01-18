@@ -1,0 +1,19 @@
+h3 {
+  text-align: center;
+}
+
+.product-image {
+  width: 350px;
+  margin-top: 5px;
+}
+
+.product-section {
+  width: 360px;
+  margin: 10px;
+  padding: 5px;
+  border: 2px lightblue solid;
+  text-align: center;
+  font-weight: bold;
+  display: inline-block;
+  vertical-align: top;
+}

@@ -15,7 +15,7 @@ var item11 = ['pen', 'jpg', 'Utensil Pen Cap Set'];
 var item12 = ['pet-sweep', 'jpg', 'Pet Sweep &trade; Animal-Powered Debris Removal System'];
 var item13 = ['scissors', 'jpg', 'Pizza Scissors'];
 var item14 = ['shark', 'jpg', 'Shark Sleeping Bag'];
-var item15 = ['sweep', 'jpg', 'Baby Sweep &trade; Debris Removal Onesie'];
+var item15 = ['sweep', 'png', 'Baby Sweep &trade; Debris Removal Onesie'];
 var item16 = ['tauntaun', 'jpg', 'Tauntaun Sleeping Bag'];
 var item17 = ['unicorn', 'jpg', 'Canned Unicorn Meat'];
 var item18 = ['usb', 'gif', 'USB Wriggling Tentacle'];
@@ -31,12 +31,12 @@ var round = 0;
 var chooser = document.getElementById('choices');
 
 createProductList ();
-// voting(25);
+voting(1);
 
 // Display a product to the page
 // document.write('<p>' + productsList[3].name + '</p>');
-var testing = Math.floor((Math.random() * productsList.length));
-productsList[testing].renderProduct();
+// var testing = Math.floor((Math.random() * productsList.length));
+// productsList[testing].renderProduct();
 
 // Select 3 random products, without duplication
 function chooseThree() {
@@ -92,6 +92,7 @@ function Product(shortName, imageType, longName) {
   this.renderProduct = function() {
     var productEl = document.createElement('section');
     productEl.setAttribute('id', this.elementId);
+    productEl.setAttribute('class', 'product-section');
     chooser.appendChild(productEl);
     var descriptionEl = document.createElement('p');
     descriptionEl.setAttribute('class', 'description');
@@ -145,10 +146,10 @@ function voting(maxRounds) {
   for (round; round < maxRounds; round++) {
     console.log('Offering set ' + (round + 1) + ' of 25.');
     chooseThree();
-    console.log('Set ' + (round + 1) + ' is ' + currentDisplay);
-    document.write('<p>Set ' + (round + 1) + ': ' + currentDisplay[0].elementId + ' (' + currentDisplay[0].displayCount + '), ');
-    document.write(currentDisplay[1].elementId + ' (' + currentDisplay[1].displayCount + '), ');
-    document.write(currentDisplay[2].elementId + ' (' + currentDisplay[2].displayCount + ')</p>');
+    console.log('Set ' + (round + 1) + ' is ' + currentDisplay[0].elementId + ', ' + currentDisplay[1].elementId + ' and ' + currentDisplay[2].elementId);
+    for (var i = 0; i < currentDisplay.length; i++) {
+      currentDisplay[i].renderProduct();
+    }
     // After displaying current 3 products, mark them as previously displayed and no longer currently on display.
     for (var j = 0; j < 3; j++) {
       currentDisplay[j].lastDisplayed = true;
