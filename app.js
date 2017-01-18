@@ -22,53 +22,57 @@ var item18 = ['usb', 'gif', 'USB Wriggling Tentacle'];
 var item19 = ['water-can', 'jpg', 'Recursive Watering Can'];
 var item20 = ['wine-glass', 'jpg', 'Non-Orthogonal Wine Glass'];
 
-// Declare variables & create an array with these 20 items
-var productsList = [];
-var selectedProduct;
-var currentDisplay = [];
+// Declare variables
+var allProducts = [];
+var randomProduct;
+var currentDisplaySet = [];
 var lastDisplaySet = [];
-var round = 0;
-var chooser = document.getElementById('choices');
+var currentRound = 0;
+var maxRounds = 25;
+var choicesSection = document.getElementById('choices');
+var resultsSection = document.getElementById('participant-results');
+var currentListeners = [];
+var listener;
 
-createProductList ();
-voting(1);
+// Create objects for all pre-defined products and add them to an array
+createProductList();
 
-// Display a product to the page
-// document.write('<p>' + productsList[3].name + '</p>');
-// var testing = Math.floor((Math.random() * productsList.length));
-// productsList[testing].renderProduct();
+// Select three products, without duplication
+chooseThree();
 
-// Select 3 random products, without duplication
+function createProductList () {
+  for (var i = 0; i < 20; i++) {
+    var itemNumber = eval('item' + (i + 1));  // Set variable name for array to be constructed into a product object
+    // console.log('Constructing: ' + itemNumber);
+    var result = new Product(itemNumber[0], itemNumber[1], itemNumber[2]); // Pass short name, image extension and long name to constructor
+    // console.log(result);
+    allProducts.push(result);
+    // console.log(allProducts);
+  }
+}
+
 function chooseThree() {
-  // Clear current list of displayed items
-  lastDisplaySet = currentDisplay;
-  currentDisplay = [];
-  for (var i = 0; i < 3; i++) {
-    console.log('Choosing item ' + (i + 1) + ' of this set.');
-    var newChoice = false;
+  // Save last set of displayed items before clearing the current list
+  lastDisplaySet = currentDisplaySet;
+  currentDisplaySet = [];
+  // Repeat until 3 unique products are selected for rendering
+  while (currentDisplaySet.length < 3) {
+    console.log('Choosing item ' + (currentDisplaySet.length + 1) + ' of set ' + (currentRound + 1));
     // Keep picking a random product until a new one is selected
-    while (!newChoice) {
+    do {
       randomChoice();
-      if (checkIfNew()) {
-        console.log('Now displaying ' + selectedProduct.name);
-        // Set display flags for current and past
-        selectedProduct.onDisplay = true;
-        selectedProduct.displayCount ++;
-        // Add selection to list of currently displayed items
-        currentDisplay.push(selectedProduct);
-        // End this loop
-        newChoice = true;
-      }
-    }
-  }
-  console.log(currentDisplay[0].elementId + ', ' + currentDisplay[1].elementId + ' and ' + currentDisplay[2].elementId);
-  if (round === 0) {
-    return;
-  }
-  // Clear display flag from previous set
-  for (var i = 0; i < 3; i++) {
-    lastDisplaySet[i].lastDisplayed = false;
-  }
+      checkIfNew(); // Only needed for debugging
+    } while (lastDisplaySet.includes(randomProduct) || currentDisplaySet.includes(randomProduct));
+    console.log(randomProduct.elementId + ' will be displayed.');
+    // Add new product to currentDisplaySet
+    currentDisplaySet.push(randomProduct);
+    // Increment display counter for product
+    randomProduct.displayCount ++;
+  };
+  console.log('Set ' + (currentRound + 1) + ' is: ' + currentDisplaySet[0].elementId + ', ' + currentDisplaySet[1].elementId + ' and ' + currentDisplaySet[2].elementId);
+  // Render the selected products with attached event listeners
+  currentDisplaySet.forEach(renderProduct);
+  currentRound ++;
 }
 
 // Object constructor function for new products
@@ -76,16 +80,14 @@ function Product(shortName, imageType, longName) {
   this.displayCount = 0;
   this.elementId = shortName;
   this.imagePath = 'img/' + shortName + '.' + imageType;
-  this.lastDisplayed = false;
   this.name = longName;
-  this.onDisplay = false;
   this.selectionCount = 0;
 
   this.selectionPct = function() {
     if (this.displayCount !== 0) {
-      var result = (this.selectionCount / this.displayCount).toFixed(2);
+      return (this.selectionCount / this.displayCount).toFixed(2) + '%';
     } else {
-      var result = NaN;
+      return '0.00% (this product was not displayed)';
     }
   };
 }
@@ -93,81 +95,48 @@ function Product(shortName, imageType, longName) {
 // Select a random product
 function randomChoice() {
   // Do not add 1 to result; array is zero-indexed.
-  var randomNumber = Math.floor((Math.random() * productsList.length));
+  var randomNumber = Math.floor((Math.random() * allProducts.length));
   console.log('Random number chosen:' + randomNumber);
-  selectedProduct = productsList[randomNumber];
-  console.log('Selected ' + selectedProduct.name);
+  randomProduct = allProducts[randomNumber];
+  console.log('Selected ' + randomProduct.elementId);
 }
 
 // Check if product is currently displayed or was displayed previously
 function checkIfNew() {
-  if (selectedProduct.lastDisplayed) {
-    console.log('This product was previously displayed.');
-    return false;
-  } else if (selectedProduct.onDisplay) {
-    console.log('This product is already on display.');
-    return false;
+  if (lastDisplaySet.includes(randomProduct)) {
+    console.log(randomProduct.elementId + ' was displayed in the previous set.');
+  } else if (currentDisplaySet.includes(randomProduct)) {
+    console.log(randomProduct.elementId + ' is already in the current set.');
   } else {
-    console.log('Product has not been displayed yet.');
-    // Mark product as currently on display
-    return true;
+    console.log(randomProduct.elementId + ' has not been displayed yet.');
   }
-}
-
-function createProductList () {
-  for (var i = 0; i < 20; i++) {
-    // console.log('Loop ' + i);
-    var target = eval('item' + (i + 1));
-    // console.log(target);
-    var result = new Product(target[0], target[1], target[2]);
-    // console.log(result);
-    productsList.push(result);
-    // console.log(productsList);
-  }
-}
-
-// Offer a set of 3 products
-function voting(maxRounds) {
-  var voteEntered = false;
-  var chosenProduct;
-  for (round; round < maxRounds; round++) {
-    console.log('Offering set ' + (round + 1) + ' of 25.');
-    chooseThree();
-    console.log('Set ' + (round + 1) + ' is ' + currentDisplay[0].elementId + ', ' + currentDisplay[1].elementId + ' and ' + currentDisplay[2].elementId);
-    for (var i = 0; i < currentDisplay.length; i++) {
-      renderProduct(currentDisplay[i]);
-      // currentDisplay[i].onclick = function () {
-      //   this.selectionCount += 1;
-      //   chosenProduct = this.elementId;
-      //   voteEntered = true;
-      //   console.log(voteEntered);
-      // };
-      // Mark product as previously displayed and no longer currently on display.
-      currentDisplay[i].lastDisplayed = true;
-      currentDisplay[i].onDisplay = false;
-    };
-  }
-    // while (!voteEntered) {
-    //   // Wait until user selects a product before offering another voting round
-    // }
-  // console.log('User chose ' + chosenProduct);
 }
 
 function selectionMade(event) {
   console.log('Target is ' + event.currentTarget);
   console.log(event.currentTarget);
   console.log(event.currentTarget.id);
-  for (var i = 0; i < currentDisplay.length; i++) {
-    if (event.currentTarget.id === currentDisplay[i].elementId) {
-      currentDisplay[i].selectionCount += 1;
-      console.log(currentDisplay[i].selectionCount);
+  for (var i = 0; i < currentDisplaySet.length; i++) {
+    if (event.currentTarget.id === currentDisplaySet[i].elementId) {
+      currentDisplaySet[i].selectionCount += 1;
+      console.log(currentDisplaySet[i].selectionCount);
     }
   }
   this.selectionCount += 1; console.log('user chose ' + event.currentTarget.id);
-  // remove product list from page
-  while (chooser.firstChild) {
-    console.log('Removing ' + chooser.firstChild.id);
-    chooser.removeChild(chooser.firstChild);
+  if (currentRound < maxRounds) {
+    // remove product list & associated listeners
+    currentListeners = [];
+    while (choicesSection.firstChild) {
+      console.log('Removing ' + choicesSection.firstChild.id);
+      choicesSection.removeChild(choicesSection.firstChild);
+    }
+    chooseThree();
+  } else {
+    console.log('All done!');
+    for (var i = 0; i < 3; i++) {
+      currentListeners[i].removeEventListener('click', selectionMade);
+    }
+    renderResults();
   }
 }
 
@@ -175,7 +144,7 @@ function renderProduct(product) {
   var productEl = document.createElement('section');
   productEl.setAttribute('id', product.elementId);
   productEl.setAttribute('class', 'product-section');
-  chooser.appendChild(productEl);
+  choicesSection.appendChild(productEl);
   var descriptionEl = document.createElement('p');
   descriptionEl.setAttribute('class', 'description');
   descriptionEl.textContent = product.name;
@@ -184,5 +153,20 @@ function renderProduct(product) {
   imageEl.setAttribute('class', 'product-image');
   imageEl.setAttribute('src', product.imagePath);
   productEl.appendChild(imageEl);
-  productEl.addEventListener('click', selectionMade, false);
+  listener = productEl.addEventListener('click', selectionMade, false);
+  currentListeners.push(productEl);
+}
+
+function renderResults() {
+  console.log();
+  var listEl = document.createElement('ol');
+  listEl.setAttribute('id', 'results-list');
+  resultsSection.appendChild(listEl);
+  for (var i = 0; i < allProducts.length; i++) {
+    var itemEl = document.createElement('li');
+    itemEl.setAttribute('id', allProducts[i].elementId + '-results');
+    itemEl.textContent = allProducts[i].selectionCount + ' vote(s) for the ' + allProducts[i].name + ' (displayed ' + allProducts[i].displayCount + ' time(s))';
+    // itemEl.textContent = allProducts[i].name + ':\nDisplayed ' + allProducts[i].displayCount + ' times, Chosen ' + allProducts[i].selectionCount + ' times.\n(' + allProducts[i].selectionPct() + ')';
+    listEl.appendChild(itemEl);
+  }
 }
