@@ -33,6 +33,7 @@ var choicesSection = document.getElementById('choices');
 var resultsSection = document.getElementById('participant-results');
 var currentListeners = [];
 var listener;
+var resultsChart;
 
 // Create objects for all pre-defined products and add them to an array
 createProductList();
@@ -158,6 +159,73 @@ function renderProduct(product) {
 }
 
 function renderResults() {
+  // Create canvas element on which to draw the chart
+  var canvasEl = document.createElement('canvas');
+  canvasEl.setAttribute('id', 'results-chart');
+  resultsSection.appendChild(canvasEl);
+
+  // Create variables and objects to pass as arguments to Chart.js
+  var context = canvasEl.getContext('2d');
+  // Chart options & initial data structure
+  var chartObject = {
+    type: 'bar',
+    data: {
+      labels: [],
+      datasets: [{
+        label: '# of votes for each product',
+        data: [],
+        backgroundColor: [],
+        borderColor: []
+      }],
+    },
+    options: {
+      borderWidth: 5,
+      responsive: true, // Allow dynamic sizing for now
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true, // Ensures that "floor" of the chart's Y-axis is zero
+            stepSize: 1 // Do not show non-integer steps
+          },
+        }],
+        xAxes: [{
+          ticks: {
+            autoSkip: false // Do not skip every other X axis label
+          }
+        }]
+      }
+    }
+  };
+
+  var datasetPointer = chartObject.data.datasets[0];
+  // Provide color choices and data for each product
+  for (var i = 0; i < allProducts.length; i ++) {
+    datasetPointer.data.push(allProducts[i].selectionCount);
+    chartObject.data.labels.push(allProducts[i].name);
+    // Select random colors, because 20 unique colors is a lot to come up with
+    var rgbArray = [];
+    var newColor = [];
+    do {
+      for (var j = 0; j < 3; j++) {
+        newColor.push(Math.floor((Math.random() * 256)));
+      }
+    } while (rgbArray.includes(newColor));
+    rgbArray.push(newColor);
+    var rndColor = 'rgba(' + newColor[0] + ', ' + newColor[1] + ', ' + newColor[2];
+    var rndColorSolid = rndColor + ', 1)';
+    var rndColorAlpha = rndColor + ', 0.2)';
+    datasetPointer.backgroundColor.push(rndColorAlpha);
+    datasetPointer.borderColor.push(rndColorSolid);
+    datasetPointer.borderWidth = 1;
+    datasetPointer.borderSkipped = false;
+  }
+
+  resultsChart = new Chart(context, chartObject);
+}
+
+// Replacing ordered list with a chart
+/*
+function renderResults() {
   console.log();
   var listEl = document.createElement('ol');
   listEl.setAttribute('id', 'results-list');
@@ -170,3 +238,4 @@ function renderResults() {
     listEl.appendChild(itemEl);
   }
 }
+*/
