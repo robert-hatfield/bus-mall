@@ -197,9 +197,10 @@ function renderResults() {
     }
   };
 
+  var datasetPointer = chartObject.data.datasets[0];
   // Provide color choices and data for each product
   for (var i = 0; i < allProducts.length; i ++) {
-    chartObject.data.datasets[0].data.push(allProducts[i].selectionCount);
+    datasetPointer.data.push(allProducts[i].selectionCount);
     chartObject.data.labels.push(allProducts[i].name);
     // Select random colors, because 20 unique colors is a lot to come up with
     var rgbArray = [];
@@ -213,13 +214,10 @@ function renderResults() {
     var rndColor = 'rgba(' + newColor[0] + ', ' + newColor[1] + ', ' + newColor[2];
     var rndColorSolid = rndColor + ', 1)';
     var rndColorAlpha = rndColor + ', 0.2)';
-    chartObject.data.datasets[0].backgroundColor.push(rndColorAlpha);
-    chartObject.data.datasets[0].borderColor.push(rndColorSolid);
-    chartObject.data.datasets[0].borderWidth = 1;
-    chartObject.data.datasets[0].borderSkipped = false;
-
-    // chartObject.data.datasets[0].backgroundColor.push(rndColorSolid);
-
+    datasetPointer.backgroundColor.push(rndColorAlpha);
+    datasetPointer.borderColor.push(rndColorSolid);
+    datasetPointer.borderWidth = 1;
+    datasetPointer.borderSkipped = false;
   }
 
   resultsChart = new Chart(context, chartObject);
