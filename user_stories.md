@@ -16,11 +16,14 @@
 - As a developer, I want to create the following properties for each product object, so that marketing researchers have clear results from the participants' choices
   - How many times the product has been displayed
   - How many times the product has been selected
-- As a developer, I want to create two boolean properties - `currentlyDisplayed` and `lastDisplayed` - so that I can present a unique set of products for each selection.
+- ~~As a developer, I want to create two boolean properties - `currentlyDisplayed` and `lastDisplayed` - so that I can present a unique set of products for each selection.~~
+> This has been solved by checking against arrays with  the `.includes()` method
+
 - As a developer, I want to use clear comments and variable names so that my code is readable and readily extensible.
 - As a developer, I want to create CSS styling that will present choices and data with visually appealing layout, font and color choices, so that participants and researchers have a pleasant experience with the application.
 
 ## Focus group participant
 - As a focus group participant, I want an application that presents selections in a visually pleasing manner, so that I will enjoy using the application.
 - As a participant, I want my interaction with the application to be simple, so that I know what actions on my part are required.
-- As a participant, I want an opportunity to vote for each product before the test is completed, so that I can make informed choices.
+- ~~As a participant, I want an opportunity to vote for each product before the test is completed, so that I can make informed choices.~~
+> I'v opted not to adjust random selections _(that is, make sure the user sees all 20 products in a single testing session)_ so that results are completely unbiased. Multiple sessions will provide a large enough testing sample.
