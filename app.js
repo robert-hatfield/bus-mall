@@ -28,11 +28,12 @@ var randomProduct;
 var currentDisplaySet = [];
 var lastDisplaySet = [];
 var currentRound = 0;
-var maxRounds = 25;
+var maxRounds = 5;
 var choicesSection = document.getElementById('choices');
 var resultsSection = document.getElementById('participant-results');
 var currentListeners = [];
 var listener;
+var resultsChart;
 
 // Create objects for all pre-defined products and add them to an array
 createProductList();
@@ -158,6 +159,51 @@ function renderProduct(product) {
 }
 
 function renderResults() {
+  // Create canvas element on which to draw the chart
+  var canvasEl = document.createElement('canvas');
+  canvasEl.setAttribute('id', 'results-chart');
+  resultsSection.appendChild(canvasEl);
+
+  // Create variables and objects to pass as arguments to Chart.js
+  var context = canvasEl.getContext('2d');
+
+  var chartObject = {
+    type: 'bar',
+    data: {
+      labels: [],
+      datasets: [{
+        label: '# of votes for each product',
+        data: [],
+        backgroundColor: []
+      }],
+    },
+    options: {
+      responsive: true, // Allow dynamic sizing for now
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true // Ensures that "floor" of the chart's Y-axis is zero
+          }
+        }]
+      }
+    }
+  };
+
+  for (var i = 0; i < allProducts.length; i += 1) {
+    chartObject.data.datasets[0].data.push(allProducts[i].selectionCount);
+    chartObject.data.labels.push(allProducts[i].name);
+    // Select random colors, because 20 unique colors is a lot to come up with
+    /* I found this at https://www.paulirish.com/2009/random-hex-color-code-snippets/#comment-2619723663, with an excellent explanation at http://www.daverabideau.com/blog/randomly-generated-hex-codes-in-javascript/ */
+    var rndColor = '#' + ('000000' + Math.random().toString(16).slice(2, 8).toUpperCase()).slice(-6);
+    chartObject.data.datasets[0].backgroundColor.push(rndColor);
+  }
+
+  resultsChart = new Chart(context, chartObject);
+}
+
+// Replacing ordered list with a chart
+/*
+function renderResults() {
   console.log();
   var listEl = document.createElement('ol');
   listEl.setAttribute('id', 'results-list');
@@ -170,3 +216,4 @@ function renderResults() {
     listEl.appendChild(itemEl);
   }
 }
+*/

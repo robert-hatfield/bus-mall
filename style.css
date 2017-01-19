@@ -6,6 +6,18 @@ h3 {
   text-align: center;
 }
 
+#participant-results {
+  text-align: center;
+}
+
+/*#results-chart {
+  margin-top: 20px;
+  width: 800px;
+  height: 495px;
+  border: 1px solid purple;
+  border-radius: 10px;
+}*/
+
 .product-image {
   width: 350px;
   margin-top: 5px;
