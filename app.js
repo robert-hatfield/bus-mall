@@ -28,7 +28,7 @@ var randomProduct;
 var currentDisplaySet = [];
 var lastDisplaySet = [];
 var currentRound = 0;
-var maxRounds = 10;
+var maxRounds = 25;
 var choicesSection = document.getElementById('choices');
 var resultsSection = document.getElementById('participant-results');
 var currentListeners = [];
