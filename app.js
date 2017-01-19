@@ -28,7 +28,7 @@ var randomProduct;
 var currentDisplaySet = [];
 var lastDisplaySet = [];
 var currentRound = 0;
-var maxRounds = 5;
+var maxRounds = 10;
 var choicesSection = document.getElementById('choices');
 var resultsSection = document.getElementById('participant-results');
 var currentListeners = [];
@@ -166,7 +166,7 @@ function renderResults() {
 
   // Create variables and objects to pass as arguments to Chart.js
   var context = canvasEl.getContext('2d');
-
+  // Chart options & initial data structure
   var chartObject = {
     type: 'bar',
     data: {
@@ -174,28 +174,52 @@ function renderResults() {
       datasets: [{
         label: '# of votes for each product',
         data: [],
-        backgroundColor: []
+        backgroundColor: [],
+        borderColor: []
       }],
     },
     options: {
+      borderWidth: 5,
       responsive: true, // Allow dynamic sizing for now
       scales: {
         yAxes: [{
           ticks: {
-            beginAtZero: true // Ensures that "floor" of the chart's Y-axis is zero
+            beginAtZero: true, // Ensures that "floor" of the chart's Y-axis is zero
+            stepSize: 1 // Do not show non-integer steps
+          },
+        }],
+        xAxes: [{
+          ticks: {
+            autoSkip: false // Do not skip every other X axis label
           }
         }]
       }
     }
   };
 
-  for (var i = 0; i < allProducts.length; i += 1) {
+  // Provide color choices and data for each product
+  for (var i = 0; i < allProducts.length; i ++) {
     chartObject.data.datasets[0].data.push(allProducts[i].selectionCount);
     chartObject.data.labels.push(allProducts[i].name);
     // Select random colors, because 20 unique colors is a lot to come up with
-    /* I found this at https://www.paulirish.com/2009/random-hex-color-code-snippets/#comment-2619723663, with an excellent explanation at http://www.daverabideau.com/blog/randomly-generated-hex-codes-in-javascript/ */
-    var rndColor = '#' + ('000000' + Math.random().toString(16).slice(2, 8).toUpperCase()).slice(-6);
-    chartObject.data.datasets[0].backgroundColor.push(rndColor);
+    var rgbArray = [];
+    var newColor = [];
+    do {
+      for (var j = 0; j < 3; j++) {
+        newColor.push(Math.floor((Math.random() * 256)));
+      }
+    } while (rgbArray.includes(newColor));
+    rgbArray.push(newColor);
+    var rndColor = 'rgba(' + newColor[0] + ', ' + newColor[1] + ', ' + newColor[2];
+    var rndColorSolid = rndColor + ', 1)';
+    var rndColorAlpha = rndColor + ', 0.2)';
+    chartObject.data.datasets[0].backgroundColor.push(rndColorAlpha);
+    chartObject.data.datasets[0].borderColor.push(rndColorSolid);
+    chartObject.data.datasets[0].borderWidth = 1;
+    chartObject.data.datasets[0].borderSkipped = false;
+
+    // chartObject.data.datasets[0].backgroundColor.push(rndColorSolid);
+
   }
 
   resultsChart = new Chart(context, chartObject);
