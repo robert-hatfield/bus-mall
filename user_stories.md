@@ -26,4 +26,4 @@
 - As a focus group participant, I want an application that presents selections in a visually pleasing manner, so that I will enjoy using the application.
 - As a participant, I want my interaction with the application to be simple, so that I know what actions on my part are required.
 - ~~As a participant, I want an opportunity to vote for each product before the test is completed, so that I can make informed choices.~~
-> I'v opted not to adjust random selections _(that is, make sure the user sees all 20 products in a single testing session)_ so that results are completely unbiased. Multiple sessions will provide a large enough testing sample.
+> I've opted not to adjust random selections _(that is, make sure the user sees all 20 products in a single testing session)_ so that results are completely unbiased. Multiple sessions will provide a large enough testing sample.

@@ -10,39 +10,51 @@ var item6 = ['bubblegum', 'jpg', 'Meatball Bubble Gum'];
 var item7 = ['chair', 'jpg', 'Sit Up!  Chair'];
 var item8 = ['cthulhu', 'jpg', 'Elder God Poseable Action Figure'];
 var item9 = ['dog-duck', 'jpg', 'Duckbill Dog Muzzle'];
-var item10 = ['dragon', 'jpg', 'Canned Dragon Meat'];
-var item11 = ['pen', 'jpg', 'Utensil Pen Cap Set'];
-var item12 = ['pet-sweep', 'jpg', 'Pet Sweep™ Animal-Powered Debris Removal System'];
-var item13 = ['scissors', 'jpg', 'Pizza Scissors'];
-var item14 = ['shark', 'jpg', 'Shark Sleeping Bag'];
-var item15 = ['sweep', 'png', 'Baby Sweep™ Debris Removal Onesie'];
-var item16 = ['tauntaun', 'jpg', 'Tauntaun Sleeping Bag'];
-var item17 = ['unicorn', 'jpg', 'Canned Unicorn Meat'];
-var item18 = ['usb', 'gif', 'USB Wriggling Tentacle'];
-var item19 = ['water-can', 'jpg', 'Recursive Watering Can'];
-var item20 = ['wine-glass', 'jpg', 'Non-Orthogonal Wine Glass'];
+// var item10 = ['dragon', 'jpg', 'Canned Dragon Meat'];
+// var item11 = ['pen', 'jpg', 'Utensil Pen Cap Set'];
+// var item12 = ['pet-sweep', 'jpg', 'Pet Sweep™ Animal-Powered Debris Removal System'];
+// var item13 = ['scissors', 'jpg', 'Pizza Scissors'];
+// var item14 = ['shark', 'jpg', 'Shark Sleeping Bag'];
+// var item15 = ['sweep', 'png', 'Baby Sweep™ Debris Removal Onesie'];
+// var item16 = ['tauntaun', 'jpg', 'Tauntaun Sleeping Bag'];
+// var item17 = ['unicorn', 'jpg', 'Canned Unicorn Meat'];
+// var item18 = ['usb', 'gif', 'USB Wriggling Tentacle'];
+// var item19 = ['water-can', 'jpg', 'Recursive Watering Can'];
+// var item20 = ['wine-glass', 'jpg', 'Non-Orthogonal Wine Glass'];
 
 // Declare variables
-var allProducts = [];
+if (!localStorage.allProducts) {
+  var allProducts = [];
+}
 var randomProduct;
 var currentDisplaySet = [];
 var lastDisplaySet = [];
 var currentRound = 0;
-var maxRounds = 25;
+var maxRounds = 3;
 var choicesSection = document.getElementById('choices');
 var resultsSection = document.getElementById('participant-results');
 var currentListeners = [];
 var listener;
 var resultsChart;
 
+// Add a method to Product objects so data (particularly displayCount & selectionCount) persist between browser sessions
+allProducts.prototype.persistToLocalStorage = function () {
+  var storedName = this.elementId;
+  localStorage.storedName = JSON.stringify(this);
+};
+
 // Create objects for all pre-defined products and add them to an array
 createProductList();
+
+// Test localStorage
+allProducts.persistToLocalStorage();
+console.log(localStorage.allProducts);
 
 // Select three products, without duplication
 chooseThree();
 
 function createProductList () {
-  for (var i = 0; i < 20; i++) {
+  for (var i = 0; i < 9; i++) {
     var itemNumber = eval('item' + (i + 1));  // Set variable name for array to be constructed into a product object
     // console.log('Constructing: ' + itemNumber);
     var result = new Product(itemNumber[0], itemNumber[1], itemNumber[2]); // Pass short name, image extension and long name to constructor
@@ -222,20 +234,3 @@ function renderResults() {
 
   resultsChart = new Chart(context, chartObject);
 }
-
-// Replacing ordered list with a chart
-/*
-function renderResults() {
-  console.log();
-  var listEl = document.createElement('ol');
-  listEl.setAttribute('id', 'results-list');
-  resultsSection.appendChild(listEl);
-  for (var i = 0; i < allProducts.length; i++) {
-    var itemEl = document.createElement('li');
-    itemEl.setAttribute('id', allProducts[i].elementId + '-results');
-    itemEl.textContent = allProducts[i].selectionCount + ' vote(s) for the ' + allProducts[i].name + ' (displayed ' + allProducts[i].displayCount + ' time(s))';
-    // itemEl.textContent = allProducts[i].name + ':\nDisplayed ' + allProducts[i].displayCount + ' times, Chosen ' + allProducts[i].selectionCount + ' times.\n(' + allProducts[i].selectionPct() + ')';
-    listEl.appendChild(itemEl);
-  }
-}
-*/
