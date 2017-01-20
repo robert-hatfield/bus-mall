@@ -19,9 +19,9 @@
 - [x] Display votes in a bar chart, using ChartJS
 
 #### Thursday branch - `busmall-persistence`
-- [ ] Use localStorage to retain data between page refreshes or closing the browser window.  
+- [x] Use localStorage to retain data between page refreshes or closing the browser window.  
 _This will give marketing researchers more data across multiple testing sets._  
-
+- [x] **Have an internal repeat object I need to troubleshoot after adding localStorage stuff.**
 - [ ] Ensure full [problem domain](https://github.com/codefellows/seattle-201d18/blob/master/class-11-av-practical-clicktracker/lab.md) is met.
   - [ ] Polish UI/UX with fonts, color palette, semantic HTML layout, etc.  
     - [ ] Edit images to a 1:1 aspect ratio
