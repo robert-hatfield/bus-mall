@@ -10,27 +10,42 @@ var item6 = ['bubblegum', 'jpg', 'Meatball Bubble Gum'];
 var item7 = ['chair', 'jpg', 'Sit Up!  Chair'];
 var item8 = ['cthulhu', 'jpg', 'Elder God Poseable Action Figure'];
 var item9 = ['dog-duck', 'jpg', 'Duckbill Dog Muzzle'];
-// var item10 = ['dragon', 'jpg', 'Canned Dragon Meat'];
-// var item11 = ['pen', 'jpg', 'Utensil Pen Cap Set'];
-// var item12 = ['pet-sweep', 'jpg', 'Pet Sweep™ Animal-Powered Debris Removal System'];
-// var item13 = ['scissors', 'jpg', 'Pizza Scissors'];
-// var item14 = ['shark', 'jpg', 'Shark Sleeping Bag'];
-// var item15 = ['sweep', 'png', 'Baby Sweep™ Debris Removal Onesie'];
-// var item16 = ['tauntaun', 'jpg', 'Tauntaun Sleeping Bag'];
-// var item17 = ['unicorn', 'jpg', 'Canned Unicorn Meat'];
-// var item18 = ['usb', 'gif', 'USB Wriggling Tentacle'];
-// var item19 = ['water-can', 'jpg', 'Recursive Watering Can'];
-// var item20 = ['wine-glass', 'jpg', 'Non-Orthogonal Wine Glass'];
+var item10 = ['dragon', 'jpg', 'Canned Dragon Meat'];
+var item11 = ['pen', 'jpg', 'Utensil Pen Cap Set'];
+var item12 = ['pet-sweep', 'jpg', 'Pet Sweep™ Animal-Powered Debris Removal System'];
+var item13 = ['scissors', 'jpg', 'Pizza Scissors'];
+var item14 = ['shark', 'jpg', 'Shark Sleeping Bag'];
+var item15 = ['sweep', 'png', 'Baby Sweep™ Debris Removal Onesie'];
+var item16 = ['tauntaun', 'jpg', 'Tauntaun Sleeping Bag'];
+var item17 = ['unicorn', 'jpg', 'Canned Unicorn Meat'];
+var item18 = ['usb', 'gif', 'USB Wriggling Tentacle'];
+var item19 = ['water-can', 'jpg', 'Recursive Watering Can'];
+var item20 = ['wine-glass', 'jpg', 'Non-Orthogonal Wine Glass'];
 
 // Declare variables
+console.log('Declaring variables');
+var allProducts;
+console.log(allProducts);
+
+// Check if allProducts exists on localStorage - if not, assign it a data type of Array and populate it with constructed products
 if (!localStorage.allProducts) {
-  var allProducts = [];
+  console.log('There\'s no local storage!');
+  allProducts = [];
+  console.log(allProducts);
+  createProductList();
+  console.log(allProducts);
+} else {
+  // If allProducts _is_ in localStorage, copy values accumulated over the past session
+  allProducts = JSON.parse(localStorage.allProducts);
+  console.log('Retrieving from localStorage');
+  console.log(allProducts);
 }
+
 var randomProduct;
 var currentDisplaySet = [];
 var lastDisplaySet = [];
 var currentRound = 0;
-var maxRounds = 3;
+var maxRounds = 25;
 var choicesSection = document.getElementById('choices');
 var resultsSection = document.getElementById('participant-results');
 var currentListeners = [];
@@ -38,23 +53,15 @@ var listener;
 var resultsChart;
 
 // Add a method to Product objects so data (particularly displayCount & selectionCount) persist between browser sessions
-allProducts.prototype.persistToLocalStorage = function () {
-  var storedName = this.elementId;
-  localStorage.storedName = JSON.stringify(this);
+allProducts.persistToLocalStorage = function () {
+  localStorage.allProducts = JSON.stringify(allProducts);
 };
 
-// Create objects for all pre-defined products and add them to an array
-createProductList();
-
-// Test localStorage
-allProducts.persistToLocalStorage();
-console.log(localStorage.allProducts);
-
-// Select three products, without duplication
+// Initiate voting by selecting three random products to display, without duplication
 chooseThree();
 
 function createProductList () {
-  for (var i = 0; i < 9; i++) {
+  for (var i = 0; i < 20; i++) {
     var itemNumber = eval('item' + (i + 1));  // Set variable name for array to be constructed into a product object
     // console.log('Constructing: ' + itemNumber);
     var result = new Product(itemNumber[0], itemNumber[1], itemNumber[2]); // Pass short name, image extension and long name to constructor
@@ -74,7 +81,7 @@ function chooseThree() {
     // Keep picking a random product until a new one is selected
     do {
       randomChoice();
-      checkIfNew(); // Only needed for debugging
+      // checkIfNew(); // Only needed for debugging
     } while (lastDisplaySet.includes(randomProduct) || currentDisplaySet.includes(randomProduct));
     console.log(randomProduct.elementId + ' will be displayed.');
     // Add new product to currentDisplaySet
@@ -109,9 +116,9 @@ function Product(shortName, imageType, longName) {
 function randomChoice() {
   // Do not add 1 to result; array is zero-indexed.
   var randomNumber = Math.floor((Math.random() * allProducts.length));
-  console.log('Random number chosen:' + randomNumber);
+  // console.log('Random number chosen:' + randomNumber);
   randomProduct = allProducts[randomNumber];
-  console.log('Selected ' + randomProduct.elementId);
+  // console.log('Selected ' + randomProduct.elementId);
 }
 
 // Check if product is currently displayed or was displayed previously
@@ -126,21 +133,24 @@ function checkIfNew() {
 }
 
 function selectionMade(event) {
-  console.log('Target is ' + event.currentTarget);
-  console.log(event.currentTarget);
-  console.log(event.currentTarget.id);
+  // console.log('Target is ' + event.currentTarget);
+  // console.log(event.currentTarget);
+  // console.log(event.currentTarget.id);
   for (var i = 0; i < currentDisplaySet.length; i++) {
     if (event.currentTarget.id === currentDisplaySet[i].elementId) {
       currentDisplaySet[i].selectionCount += 1;
-      console.log(currentDisplaySet[i].selectionCount);
+      console.log(event.currentTarget.id + ' selected, it has been chosen ' + currentDisplaySet[i].selectionCount + ' times.');
     }
   }
-  this.selectionCount += 1; console.log('user chose ' + event.currentTarget.id);
+  this.selectionCount += 1;
+  // Save session data immediately after selectionCount (user vote) is incremented
+  allProducts.persistToLocalStorage();
+  // console.log(localStorage.allProducts);
   if (currentRound < maxRounds) {
     // remove product list & associated listeners
     currentListeners = [];
     while (choicesSection.firstChild) {
-      console.log('Removing ' + choicesSection.firstChild.id);
+      // console.log('Removing ' + choicesSection.firstChild.id);
       choicesSection.removeChild(choicesSection.firstChild);
     }
     chooseThree();
