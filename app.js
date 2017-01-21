@@ -71,10 +71,21 @@ function createProductList () {
   }
 }
 
+// Add method to calculate how likely a product is to be chosen when displayed
+// (n% = selectionCount / displayCount = )
+Product.prototype.selectionPct = function () {
+  if (this.displayCount !== 0) {
+    return ((this.selectionCount / this.displayCount).toFixed(4) * 100).toFixed(2);
+  } else {
+    return '0.00% (this product was not displayed)';
+  }
+};
+
 function chooseThree() {
   // Save last set of displayed items before clearing the current list
   lastDisplaySet = currentDisplaySet;
   currentDisplaySet = [];
+
   // Repeat until 3 unique products are selected for rendering
   while (currentDisplaySet.length < 3) {
     console.log('Choosing item ' + (currentDisplaySet.length + 1) + ' of set ' + (currentRound + 1));
@@ -102,14 +113,6 @@ function Product(shortName, imageType, longName) {
   this.imagePath = 'img/' + shortName + '.' + imageType;
   this.name = longName;
   this.selectionCount = 0;
-
-  this.selectionPct = function() {
-    if (this.displayCount !== 0) {
-      return (this.selectionCount / this.displayCount).toFixed(2) + '%';
-    } else {
-      return '0.00% (this product was not displayed)';
-    }
-  };
 }
 
 // Select a random product
