@@ -48,6 +48,8 @@ var currentRound = 0;
 var maxRounds = 25;
 var choicesSection = document.getElementById('choices');
 var resultsSection = document.getElementById('participant-results');
+var resetButton = document.getElementById('reset');
+var newTestButton = document.getElementById('next_test');
 var currentListeners = [];
 var listener;
 var resultsChart;
@@ -55,6 +57,28 @@ var resultsChart;
 // Add a method to Product objects so data (particularly displayCount & selectionCount) persist between browser sessions
 allProducts.persistToLocalStorage = function () {
   localStorage.allProducts = JSON.stringify(allProducts);
+};
+
+newTestButton.onclick = function() {
+  console.log('New test button was pressed.');
+  var result = confirm('Please click \'Okay\' before seating next participant.');
+  if (result) {
+    console.log('Refreshing page. Retaining localStorage.');
+    window.location.reload();
+  }
+};
+// Add a reset button to clear localStorage of past results and reload page
+resetButton.onclick = function() {
+  console.log('Reset button was pressed.');
+  var checkReset = prompt('Are you sure? Doing so will erase all testing records.\nPlease enter your admin password if this is correct. Otherwise press \'Cancel\'.');
+  if (checkReset === 'Ocelot12') {
+    localStorage.clear();
+    console.log(localStorage);
+    alert('Clearing all testing data. This page will now reload.');
+    window.location.reload(true);
+  } else {
+    alert('Admin password was not provided. No changes have been made.');
+  }
 };
 
 // Initiate voting by selecting three random products to display, without duplication
@@ -247,3 +271,9 @@ function renderResults() {
 
   resultsChart = new Chart(context, chartObject);
 }
+
+// Force scroll to top of page when page is reloaded with data reset
+// Solution by ProfNandaa found at http://stackoverflow.com/a/26837814
+window.onbeforeunload = function () {
+  window.scrollTo(0, 0);
+};

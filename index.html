@@ -7,10 +7,22 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js" type="text/javascript"></script>
   </head>
   <body>
-    <h3>Which of these products are you most likely to purchase?</h3>
+    <h1 id="heading">BusMall&trade; Market Analysis Program</h1>
+    <section id="greeting">
+      <p>Thank you for helping us offer a catalog of products <em>you</em> want to buy!<br />For our testing today, we will offer you 25 sets of <strong>three</strong> products. Please click on which of the three products you'd most be interested in purchasing.</p>
+      <p class="explanatory">Please note that you will see the same products multiple times. When selecting a product, we ask that you choose which of <em>those three</em> you find most appealing.</p>
+    </section>
+    <section id="voting_context">
+      <h3 id="progress_tracking"></h3>
+      <h4>Which of these products are you most likely to purchase?</h4>
+    </section>
     <section id="choices">
     </section>
     <section id="participant-results">
+    </section>
+    <section id="admin" style="text-align: center">
+      <button type="button" id="next_test" style="font-size: 16px; background-color: blue; color: white">Start new test</button>
+      <button type="button" id="reset" style="font-size: 16px; background-color: red; color: white">Reset data</button>
     </section>
   </body>
   <script src="app.js" type="text/javascript"></script>
