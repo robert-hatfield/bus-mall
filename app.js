@@ -47,7 +47,7 @@ var lastDisplaySet = [];
 var currentRound = 0;
 var maxRounds = 25;
 var choicesSection = document.getElementById('choices');
-var resultsSection = document.getElementById('participant-results');
+var resultsSection = document.getElementById('participant_results');
 var resetButton = document.getElementById('reset');
 var newTestButton = document.getElementById('next_test');
 var currentListeners = [];
@@ -262,7 +262,7 @@ function renderResults() {
     rgbArray.push(newColor);
     var rndColor = 'rgba(' + newColor[0] + ', ' + newColor[1] + ', ' + newColor[2];
     var rndColorSolid = rndColor + ', 1)';
-    var rndColorAlpha = rndColor + ', 0.2)';
+    var rndColorAlpha = rndColor + ', 0.33)';
     datasetPointer.backgroundColor.push(rndColorAlpha);
     datasetPointer.borderColor.push(rndColorSolid);
     datasetPointer.borderWidth = 1;
