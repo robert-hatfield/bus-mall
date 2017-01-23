@@ -1,22 +1,31 @@
-h3 {
+body {
+  background-color: #778899;
+}
+
+h1 {
+  font-family: 'Fjalla One', sans-serif;
+  text-align: center;
+}
+
+#voting_context {
   text-align: center;
 }
 
 #choices {
   text-align: center;
-}
-
-#participant-results {
-  text-align: center;
-}
-
-/*#results-chart {
-  margin-top: 20px;
-  width: 800px;
-  height: 495px;
-  border: 1px solid purple;
+  background-color: lightgrey;
+  padding: 15px;
   border-radius: 10px;
-}*/
+  margin-bottom: 20px;
+}
+
+#participant_results {
+  text-align: center;
+  margin-bottom: 20px;
+  background-color: white;
+  border-radius: 10px;
+  padding: 15px;
+}
 
 .product-image {
   width: 350px;
@@ -25,9 +34,10 @@ h3 {
 
 .product-section {
   width: 360px;
+  background-color: white;
   margin: 10px;
   padding: 5px;
-  border: 2px lightblue solid;
+  border-radius: 10px;
   font-weight: bold;
   display: inline-block;
   vertical-align: top;
